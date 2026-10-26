@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+# Environment variables
+.env
+.env.*
+!.env.example
