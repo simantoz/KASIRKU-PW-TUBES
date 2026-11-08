@@ -1,4 +1,5 @@
 {
+  "installCommand": "composer install --no-dev --optimize-autoloader",
   "functions": {
     "api/index.php": {
       "runtime": "vercel-php@0.7.2"
@@ -15,6 +16,7 @@
     }
   ],
   "env": {
+    "APP_KEY": "base64:pKdzMxL2BapZbTpMhTM2hvdA7DR4WzF6HGjM3RpDhJg=",
     "APP_ENV": "production",
     "APP_DEBUG": "true",
     "LOG_CHANNEL": "stderr",
