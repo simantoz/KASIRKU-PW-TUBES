@@ -1,121 +1,104 @@
 @extends('layouts.app')
 
 @section('title', 'Riwayat Shift Kasir')
-@section('page_title', 'Riwayat Shift & Transaksi Kasir')
 
 @section('content')
 <div class="container-fluid px-0">
-    <!-- Shift Summary Cards -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: #fff; font-size: 1.6rem;">Riwayat Transaksi Saya</h2>
+            <div style="color: #8892b0; font-size: 0.85rem;">Transaksi yang Anda layani pada shift ini</div>
+        </div>
+        <a href="{{ route('kasir.pos') }}" class="btn btn-primary-custom d-flex align-items-center gap-2">
+            <i class="bi bi-calculator"></i>
+            <span>Buka Kasir POS</span>
+        </a>
+    </div>
+
+    <!-- Shift KPI Cards -->
     <div class="row g-3 mb-4">
         <div class="col-md-6">
-            <div class="card card-custom stat-card border-0 bg-white shadow-sm">
-                <div class="text-muted fw-semibold small">Total Transaksi Shift Hari Ini</div>
-                <h3 class="fw-bold text-dark mt-2 mb-1">{{ number_format($shiftSummary->count ?? 0) }} <span style="font-size: 1rem; font-weight: normal;">Transaksi</span></h3>
-                <div class="text-success small fw-medium">
-                    <i class="bi bi-clock-history"></i> Transaksi oleh akun {{ Auth::user()->name }}
+            <div class="stat-card">
+                <div style="color: #8892b0; font-size: 0.82rem; font-weight: 600;">Total Transaksi Hari Ini</div>
+                <h3 class="fw-bold mt-2 mb-1" style="color: #fff;">{{ number_format($shiftSummary->count ?? 0) }} <span style="font-size: 0.9rem; font-weight: normal; color: #8892b0;">Pesanan</span></h3>
+                <div class="small fw-semibold" style="color: #34d399;">
+                    <i class="bi bi-check-circle"></i> Berhasil diproses
                 </div>
-                <div class="stat-icon bg-primary-subtle text-primary">
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
                     <i class="bi bi-receipt"></i>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6">
-            <div class="card card-custom stat-card border-0 bg-white shadow-sm">
-                <div class="text-muted fw-semibold small">Total Omzet Kasir Shift Hari Ini</div>
-                <h3 class="fw-bold text-success mt-2 mb-1">Rp {{ number_format($shiftSummary->total ?? 0, 0, ',', '.') }}</h3>
-                <div class="text-muted small fw-medium">
-                    <i class="bi bi-cash-coin"></i> Total uang yang diproses pada shift ini
+            <div class="stat-card">
+                <div style="color: #8892b0; font-size: 0.82rem; font-weight: 600;">Total Omzet Kasir Shift Ini</div>
+                <h3 class="fw-bold mt-2 mb-1" style="color: #ea7c69;">Rp {{ number_format($shiftSummary->total ?? 0, 0, ',', '.') }}</h3>
+                <div class="small fw-semibold" style="color: #8892b0;">
+                    Uang masuk shift {{ Auth::user()->name }}
                 </div>
-                <div class="stat-icon bg-success-subtle text-success">
-                    <i class="bi bi-wallet2"></i>
+                <div class="stat-icon" style="background: rgba(234, 124, 105, 0.15); color: #ea7c69;">
+                    <i class="bi bi-cash-stack"></i>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Filter Card -->
-    <div class="card card-custom p-3 mb-4 border-0 shadow-sm bg-white">
+    <div class="card-custom p-3 mb-4">
         <form method="GET" action="{{ route('kasir.transactions') }}" class="row g-2 align-items-center">
             <div class="col-md-4">
-                <div class="input-group">
-                    <span class="input-group-text bg-white text-muted"><i class="bi bi-calendar3"></i></span>
-                    <input type="date" name="date" class="form-control" value="{{ request('date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
-                </div>
+                <input type="date" name="date" class="form-control" value="{{ request('date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
             </div>
             <div class="col-md-3 d-flex gap-2">
-                <button type="submit" class="btn btn-primary-custom flex-grow-1">
-                    <i class="bi bi-funnel"></i> Tampilkan
-                </button>
-                <a href="{{ route('kasir.transactions') }}" class="btn btn-light border" title="Hari Ini">
-                    Hari Ini
-                </a>
-            </div>
-            <div class="col-md-5 text-md-end text-muted small">
-                <i class="bi bi-info-circle me-1"></i> Anda hanya melihat riwayat transaksi yang Anda layani sendiri.
+                <button type="submit" class="btn btn-primary-custom flex-grow-1">Tampilkan</button>
+                <a href="{{ route('kasir.transactions') }}" class="btn" style="background: #2d303e; color: #fff; border-radius: 12px;">Hari Ini</a>
             </div>
         </form>
     </div>
 
-    <!-- Shift Transactions Table -->
-    <div class="card card-custom p-0 border-0 shadow-sm overflow-hidden">
+    <!-- Table -->
+    <div class="card-custom p-0 overflow-hidden">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
-                <thead class="table-light">
+            <table class="table table-dark-custom mb-0">
+                <thead>
                     <tr>
-                        <th class="ps-3">No. Invoice</th>
-                        <th>Waktu Transaksi</th>
-                        <th>Nama Pelanggan</th>
+                        <th class="ps-4">No. Invoice</th>
+                        <th>Waktu</th>
+                        <th>Pelanggan</th>
                         <th>Metode Bayar</th>
-                        <th>Jumlah Item</th>
+                        <th>Item</th>
                         <th class="text-end">Total Bayar</th>
-                        <th class="text-center">Aksi</th>
+                        <th class="text-center pe-4">Struk</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($myTransactions as $t)
                         <tr>
-                            <td class="ps-3">
-                                <span class="badge bg-dark-subtle text-dark font-monospace fw-semibold">{{ $t->invoice_code }}</span>
-                            </td>
+                            <td class="ps-4"><span class="badge" style="background: #2d303e; color: #fff;">{{ $t->invoice_code }}</span></td>
                             <td>
-                                <div class="fw-semibold text-dark">{{ $t->created_at->format('d/m/Y') }}</div>
-                                <div class="text-muted small">{{ $t->created_at->format('H:i') }} WIB</div>
+                                <div class="text-white">{{ $t->created_at->format('d/m/Y') }}</div>
+                                <small style="color: #8892b0;">{{ $t->created_at->format('H:i') }} WIB</small>
                             </td>
-                            <td>
-                                <span class="text-dark">{{ $t->customer_name }}</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-light text-dark border text-uppercase" style="font-size: 0.75rem;">
-                                    {{ $t->payment_method }}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary">
-                                    {{ $t->details->sum('qty') }} pcs ({{ $t->details->count() }} macam)
-                                </span>
-                            </td>
-                            <td class="text-end fw-bold text-success">
-                                Rp {{ number_format($t->total_amount, 0, ',', '.') }}
-                            </td>
-                            <td class="text-center">
-                                <a href="{{ route('kasir.receipt', $t->id) }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-printer"></i> Cetak Struk
+                            <td class="text-white">{{ $t->customer_name }}</td>
+                            <td><span class="badge text-uppercase" style="background: rgba(234, 124, 105, 0.15); color: #ea7c69;">{{ $t->payment_method }}</span></td>
+                            <td><span class="badge" style="background: #2d303e; color: #fff;">{{ $t->details->sum('qty') }} pcs</span></td>
+                            <td class="text-end fw-bold" style="color: #ea7c69;">Rp {{ number_format($t->total_amount, 0, ',', '.') }}</td>
+                            <td class="text-center pe-4">
+                                <a href="{{ route('kasir.receipt', $t->id) }}" target="_blank" class="btn btn-sm" style="background: #2d303e; color: #ea7c69; border-radius: 8px;">
+                                    <i class="bi bi-printer"></i>
                                 </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-5">
-                                <i class="bi bi-clock-history fs-1 d-block mb-2 text-secondary opacity-50"></i>
-                                Belum ada transaksi yang diproses pada tanggal ini.
-                            </td>
+                            <td colspan="7" class="text-center py-5" style="color: #8892b0;">Belum ada transaksi pada tanggal ini.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="p-3 border-top d-flex justify-content-end">
+        <div class="p-3 border-top d-flex justify-content-end" style="border-color: rgba(255,255,255,0.08) !important;">
             {{ $myTransactions->links('pagination::bootstrap-5') }}
         </div>
     </div>

@@ -4,203 +4,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') - KasirKu POS</title>
+    <title>@yield('title', 'Dashboard') - KasirKu</title>
 
-    <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
 
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
-            --accent-emerald: #059669;
-            --sidebar-bg: #0f172a;
-            --sidebar-color: #94a3b8;
-            --sidebar-active-bg: #1e293b;
-            --bg-light: #f8fafc;
-            --card-border: #e2e8f0;
+            --bg-main: #1f1d2b;
+            --bg-sidebar: #1f1d2b;
+            --bg-card: #252836;
+            --bg-card-subtle: #2d303e;
+            --bg-input: #2d303e;
+            --primary: #ea7c69;
+            --primary-hover: #e06550;
+            --text-main: #ffffff;
+            --text-muted: #8892b0;
+            --text-light: #abb2bf;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --sidebar-w: 96px;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-light);
-            color: #334155;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Sidebar Styles */
+        /* Slim Vertical Sidebar like reference */
         .sidebar {
-            width: 260px;
-            min-height: 100vh;
-            background-color: var(--sidebar-bg);
-            color: #e2e8f0;
+            width: var(--sidebar-w);
+            height: 100vh;
             position: fixed;
             top: 0;
-            bottom: 0;
             left: 0;
-            z-index: 1000;
-            transition: all 0.3s ease;
+            background-color: var(--bg-sidebar);
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
+            align-items: center;
+            padding: 1.5rem 0;
+            z-index: 1000;
+            border-right: 1px solid var(--border-color);
         }
 
         .sidebar-brand {
-            padding: 1.25rem 1.5rem;
+            width: 56px;
+            height: 56px;
+            background: rgba(234, 124, 105, 0.2);
+            border-radius: 16px;
             display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            font-size: 1.25rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: #fff;
-            text-decoration: none;
-        }
-
-        .sidebar-brand .brand-icon {
-            width: 38px;
-            height: 38px;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            border-radius: 10px;
-            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            color: var(--primary);
+            text-decoration: none;
+            margin-bottom: 2rem;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-brand i {
+            font-size: 1.5rem;
+        }
+
+        .sidebar-brand-text {
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+            margin-top: 2px;
             color: #fff;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
         .sidebar-menu {
             list-style: none;
-            padding: 1rem 0.75rem;
+            padding: 0;
             margin: 0;
-            flex-grow: 1;
-        }
-
-        .sidebar-heading {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #64748b;
-            padding: 0.75rem 0.75rem 0.25rem;
-            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            align-items: center;
+            width: 100%;
+            flex: 1;
         }
 
         .nav-item {
-            margin-bottom: 0.25rem;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         .nav-link-custom {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 0.85rem;
-            padding: 0.7rem 0.85rem;
-            color: var(--sidebar-color);
+            justify-content: center;
+            color: var(--primary);
             text-decoration: none;
-            font-size: 0.88rem;
-            font-weight: 500;
-            border-radius: 8px;
+            font-size: 0.68rem;
+            font-weight: 600;
             transition: all 0.2s ease;
+            position: relative;
         }
 
         .nav-link-custom i {
-            font-size: 1.15rem;
+            font-size: 1.35rem;
+            margin-bottom: 2px;
         }
 
         .nav-link-custom:hover {
             color: #fff;
-            background-color: rgba(255, 255, 255, 0.06);
+            background: rgba(234, 124, 105, 0.15);
         }
 
         .nav-link-custom.active {
-            color: #fff;
-            background-color: var(--primary-color);
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 8px 24px rgba(234, 124, 105, 0.4);
         }
 
         .sidebar-footer {
-            padding: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .user-profile {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
+            width: 100%;
+            padding: 0 1rem;
         }
 
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #10b981, #059669);
+        .user-avatar-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: #2d303e;
+            border: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
-        /* Main Content Layout */
-        .main-wrapper {
-            margin-left: 260px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-        }
-
-        /* Top Navbar */
-        .top-navbar {
-            background-color: #fff;
-            border-bottom: 1px solid var(--card-border);
-            padding: 0.85rem 1.75rem;
+        .logout-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-
-        .page-content {
-            padding: 1.75rem;
-            flex-grow: 1;
-        }
-
-        /* Card Custom Styling */
-        .card-custom {
-            background: #fff;
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            justify-content: center;
+            font-size: 1.2rem;
             transition: all 0.2s ease;
         }
 
-        .card-custom:hover {
-            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+        .logout-btn:hover {
+            color: #ff4949;
+            border-color: rgba(255, 73, 73, 0.4);
+            background: rgba(255, 73, 73, 0.1);
+        }
+
+        /* Hamburger: hanya tampil di layar kecil */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 0.75rem;
+            left: 0.75rem;
+            z-index: 1100;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Main Wrapper */
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-content {
+            padding: 1.75rem 2rem;
+            flex: 1;
+        }
+
+        /* Dark Card Custom */
+        .card-custom {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            color: var(--text-main);
         }
 
         .stat-card {
-            border-radius: 14px;
-            padding: 1.25rem 1.5rem;
+            border-radius: 16px;
+            padding: 1.5rem;
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
         }
 
         .stat-card .stat-icon {
@@ -209,167 +232,254 @@
             top: 1.25rem;
             width: 48px;
             height: 48px;
-            border-radius: 12px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
         }
 
+        /* Primary Button */
         .btn-primary-custom {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+            background-color: var(--primary);
+            border: none;
             color: #fff;
             font-weight: 600;
-            padding: 0.55rem 1.15rem;
-            border-radius: 8px;
+            padding: 0.65rem 1.4rem;
+            border-radius: 12px;
             transition: all 0.2s ease;
+            box-shadow: 0 6px 18px rgba(234, 124, 105, 0.3);
         }
 
         .btn-primary-custom:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
+            background-color: var(--primary-hover);
             color: #fff;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 8px 24px rgba(234, 124, 105, 0.45);
         }
 
         .badge-role {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 700;
             text-transform: uppercase;
-            padding: 0.25rem 0.6rem;
-            border-radius: 6px;
+            padding: 0.25rem 0.65rem;
+            border-radius: 8px;
+        }
+        .badge-role-owner { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-role-gudang { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-role-kasir { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        /* Tables in Dark Theme */
+        .table {
+            color: var(--text-main);
+            border-color: var(--border-color);
+        }
+        .table-dark-custom {
+            background: transparent;
+            color: var(--text-main);
+        }
+        .table-dark-custom thead th {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem 0.75rem;
+        }
+        .table-dark-custom tbody td {
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+            color: var(--text-light);
+        }
+        .table-dark-custom tbody tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02);
+            color: #fff;
         }
 
-        .badge-role-owner {
-            background-color: #fef3c7;
-            color: #b45309;
+        /* Form Controls */
+        .form-control, .form-select {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            border-radius: 12px;
+            padding: 0.65rem 1rem;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-input);
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 0 3px rgba(234, 124, 105, 0.25);
+        }
+        .form-control::placeholder {
+            color: #64748b;
         }
 
-        .badge-role-gudang {
-            background-color: #e0e7ff;
-            color: #4338ca;
+        /* Modal Dark */
+        .modal-content {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-main);
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+        }
+        .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
         }
 
-        .badge-role-kasir {
-            background-color: #d1fae5;
-            color: #047857;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #393c49;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
         }
 
         @media (max-width: 991.98px) {
             .sidebar {
-                margin-left: -260px;
+                margin-left: calc(-1 * var(--sidebar-w));
             }
             .sidebar.show {
                 margin-left: 0;
             }
+            .sidebar-toggle {
+                display: flex;
+            }
             .main-wrapper {
                 margin-left: 0;
+            }
+            .page-content {
+                padding: 4.5rem 1rem 1rem;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .page-content {
+                padding: 4.25rem 0.75rem 0.75rem;
             }
         }
     </style>
     @yield('styles')
 </head>
 <body>
-    <!-- Sidebar -->
+    <!-- Hamburger untuk sidebar di layar kecil -->
+    <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Buka menu">
+        <i class="bi bi-list"></i>
+    </button>
+
+    @php
+        $user = Auth::user();
+        $role = $user->role ?? '';
+    @endphp
+
+    <!-- Slim Sidebar -->
     <aside class="sidebar" id="sidebar">
-        <a href="{{ url('/') }}" class="sidebar-brand">
-            <div class="brand-icon">
-                <i class="bi bi-shop"></i>
-            </div>
-            <span>KasirKu POS</span>
+        <a href="{{ url('/') }}" class="sidebar-brand" title="KasirKu">
+            <i class="bi bi-shop"></i>
+            <span class="sidebar-brand-text">KasirKu</span>
         </a>
 
         <ul class="sidebar-menu">
-            @php
-                $user = Auth::user();
-                $role = $user->role ?? '';
-            @endphp
-
             @if($role === 'owner')
-                <div class="sidebar-heading">Menu Owner / Manajer</div>
                 <li class="nav-item">
-                    <a href="{{ route('owner.dashboard') }}" class="nav-link-custom {{ request()->routeIs('owner.dashboard') ? 'active' : '' }}">
-                        <i class="bi bi-speedometer2"></i>
-                        <span>Dashboard Utama</span>
+                    <a href="{{ route('owner.dashboard') }}" class="nav-link-custom {{ request()->routeIs('owner.dashboard') ? 'active' : '' }}" title="Dashboard">
+                        <i class="bi bi-house-door-fill"></i>
+                        <span>Home</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('owner.transactions') }}" class="nav-link-custom {{ request()->routeIs('owner.transactions') ? 'active' : '' }}">
-                        <i class="bi bi-receipt-cutoff"></i>
-                        <span>Riwayat Penjualan</span>
+                    <a href="{{ route('owner.transactions') }}" class="nav-link-custom {{ request()->routeIs('owner.transactions*') ? 'active' : '' }}" title="Riwayat Penjualan">
+                        <i class="bi bi-clock-history"></i>
+                        <span>History</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('owner.print_report') }}" class="nav-link-custom {{ request()->routeIs('owner.print_report') ? 'active' : '' }}">
-                        <i class="bi bi-file-earmark-pdf"></i>
-                        <span>Laporan Keuangan</span>
+                    <a href="{{ route('owner.purchases.index') }}" class="nav-link-custom {{ request()->routeIs('owner.purchases*') ? 'active' : '' }}" title="Barang Masuk">
+                        <i class="bi bi-truck"></i>
+                        <span>Restock</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('owner.users.index') }}" class="nav-link-custom {{ request()->routeIs('owner.users.*') ? 'active' : '' }}">
+                    <a href="{{ route('owner.print_report') }}" class="nav-link-custom {{ request()->routeIs('owner.print_report') ? 'active' : '' }}" title="Laporan">
+                        <i class="bi bi-file-earmark-bar-graph"></i>
+                        <span>Report</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('owner.users.index') }}" class="nav-link-custom {{ request()->routeIs('owner.users.*') ? 'active' : '' }}" title="Pegawai">
                         <i class="bi bi-people"></i>
-                        <span>Manajemen Pegawai</span>
+                        <span>Staff</span>
                     </a>
                 </li>
             @elseif($role === 'gudang')
-                <div class="sidebar-heading">Menu Admin Gudang</div>
                 <li class="nav-item">
-                    <a href="{{ route('gudang.dashboard') }}" class="nav-link-custom {{ request()->routeIs('gudang.dashboard') ? 'active' : '' }}">
-                        <i class="bi bi-grid-1x2"></i>
-                        <span>Dashboard Gudang</span>
+                    <a href="{{ route('gudang.dashboard') }}" class="nav-link-custom {{ request()->routeIs('gudang.dashboard') ? 'active' : '' }}" title="Dashboard">
+                        <i class="bi bi-house-door-fill"></i>
+                        <span>Home</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('gudang.products.index') }}" class="nav-link-custom {{ request()->routeIs('gudang.products.*') ? 'active' : '' }}">
-                        <i class="bi bi-box-seam"></i>
-                        <span>Master Data Barang</span>
+                    <a href="{{ route('gudang.products.index') }}" class="nav-link-custom {{ request()->routeIs('gudang.products.*') ? 'active' : '' }}" title="Katalog Menu">
+                        <i class="bi bi-journal-text"></i>
+                        <span>Menu</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('gudang.categories.index') }}" class="nav-link-custom {{ request()->routeIs('gudang.categories.*') ? 'active' : '' }}">
+                    <a href="{{ route('gudang.categories.index') }}" class="nav-link-custom {{ request()->routeIs('gudang.categories.*') ? 'active' : '' }}" title="Kategori">
                         <i class="bi bi-tags"></i>
-                        <span>Kategori Barang</span>
+                        <span>Category</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('gudang.stock.index') }}" class="nav-link-custom {{ request()->routeIs('gudang.stock.*') ? 'active' : '' }}">
+                    <a href="{{ route('gudang.purchases.create') }}" class="nav-link-custom {{ request()->routeIs('gudang.purchases.create') ? 'active' : '' }}" title="Input Barang Masuk">
+                        <i class="bi bi-plus-square-fill"></i>
+                        <span>PO In</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('gudang.purchases.index') }}" class="nav-link-custom {{ request()->routeIs('gudang.purchases.index') || request()->routeIs('gudang.stock.*') ? 'active' : '' }}" title="Riwayat Barang Masuk">
                         <i class="bi bi-truck"></i>
-                        <span>Stok Masuk (Supplier)</span>
+                        <span>Restock</span>
                     </a>
                 </li>
             @elseif($role === 'kasir')
-                <div class="sidebar-heading">Menu Kasir (Front-Office)</div>
                 <li class="nav-item">
-                    <a href="{{ route('kasir.pos') }}" class="nav-link-custom {{ request()->routeIs('kasir.pos') ? 'active' : '' }}">
-                        <i class="bi bi-calculator"></i>
-                        <span>Kasir POS (Transaksi)</span>
+                    <a href="{{ route('kasir.pos') }}" class="nav-link-custom {{ request()->routeIs('kasir.pos') ? 'active' : '' }}" title="Kasir Order">
+                        <i class="bi bi-house-door-fill"></i>
+                        <span>Home</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('kasir.transactions') }}" class="nav-link-custom {{ request()->routeIs('kasir.transactions') ? 'active' : '' }}">
+                    <a href="{{ route('kasir.transactions') }}" class="nav-link-custom {{ request()->routeIs('kasir.transactions') ? 'active' : '' }}" title="Riwayat Transaksi">
                         <i class="bi bi-clock-history"></i>
-                        <span>Riwayat Shift Saya</span>
+                        <span>History</span>
                     </a>
                 </li>
             @endif
         </ul>
 
         <div class="sidebar-footer">
-            <div class="user-profile mb-2">
-                <div class="user-avatar">
-                    {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
-                </div>
-                <div class="overflow-hidden">
-                    <div class="text-white fw-bold text-truncate" style="font-size: 0.85rem;">{{ $user->name ?? 'User' }}</div>
-                    <span class="badge badge-role badge-role-{{ $role }}">{{ ucfirst($role) }}</span>
-                </div>
+            <div class="user-avatar-btn" title="{{ $user->name ?? 'User' }} ({{ ucfirst($role) }})">
+                {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
             </div>
-            <form action="{{ route('logout') }}" method="POST" class="mt-2">
+            <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-outline-danger btn-sm w-100 d-flex align-items-center justify-content-center gap-2">
+                <button type="submit" class="logout-btn" title="Keluar">
                     <i class="bi bi-box-arrow-right"></i>
-                    <span>Keluar (Logout)</span>
                 </button>
             </form>
         </div>
@@ -377,59 +487,27 @@
 
     <!-- Main Content Area -->
     <div class="main-wrapper">
-        <!-- Top Navbar -->
-        <header class="top-navbar">
-            <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-light d-lg-none" id="sidebarToggle" type="button">
-                    <i class="bi bi-list fs-5"></i>
-                </button>
-                <h5 class="mb-0 fw-bold text-dark">@yield('page_title', 'Dashboard')</h5>
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="d-none d-md-flex align-items-center gap-2 text-muted" style="font-size: 0.85rem;">
-                    <i class="bi bi-calendar3"></i>
-                    <span>{{ Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</span>
-                    <span class="mx-1">•</span>
-                    <i class="bi bi-clock"></i>
-                    <span id="liveClock">{{ Carbon\Carbon::now()->format('H:i') }} WIB</span>
-                </div>
-                <span class="badge badge-role badge-role-{{ $role }} d-none d-sm-inline-block">
-                    Level: {{ ucfirst($role) }}
-                </span>
-            </div>
-        </header>
-
-        <!-- Main Body Content -->
         <main class="page-content">
-            <!-- Flash Notification Alerts -->
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 shadow-sm border-0" role="alert">
-                    <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+                <div class="alert alert-dismissible fade show d-flex align-items-center gap-2 border-0 mb-3" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-radius: 14px;" role="alert">
+                    <i class="bi bi-check-circle-fill fs-5"></i>
                     <div>{{ session('success') }}</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
             @if(session('warning'))
-                <div class="alert alert-warning alert-dismissible fade show d-flex align-items-center gap-2 shadow-sm border-0" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill fs-5 text-warning"></i>
+                <div class="alert alert-dismissible fade show d-flex align-items-center gap-2 border-0 mb-3" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-radius: 14px;" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
                     <div>{{ session('warning') }}</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 shadow-sm border-0" role="alert">
-                    <i class="bi bi-x-circle-fill fs-5 text-danger"></i>
+                <div class="alert alert-dismissible fade show d-flex align-items-center gap-2 border-0 mb-3" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border-radius: 14px;" role="alert">
+                    <i class="bi bi-x-circle-fill fs-5"></i>
                     <div>{{ session('error') }}</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            @if(session('info'))
-                <div class="alert alert-info alert-dismissible fade show d-flex align-items-center gap-2 shadow-sm border-0" role="alert">
-                    <i class="bi bi-info-circle-fill fs-5 text-info"></i>
-                    <div>{{ session('info') }}</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
@@ -438,40 +516,28 @@
         </main>
     </div>
 
-    <!-- jQuery 3.7.1 -->
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <!-- Bootstrap 5.3 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
-    <!-- Chart.js (for Owner & Gudang analytics) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
     <script>
-        // Setup CSRF header for all AJAX requests
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
 
-        // Toggle Sidebar on mobile
-        $('#sidebarToggle').on('click', function() {
-            $('#sidebar').toggleClass('show');
-        });
-
-        // Realtime Clock
-        function updateClock() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            $('#liveClock').text(`${h}:${m}:${s} WIB`);
+        // Sidebar toggle untuk layar kecil
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        if (sidebar && sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('show'));
+            // Tutup sidebar saat klik konten
+            document.querySelector('.page-content').addEventListener('click', () => sidebar.classList.remove('show'));
         }
-        setInterval(updateClock, 1000);
-        updateClock();
     </script>
-
     @yield('scripts')
 </body>
 </html>

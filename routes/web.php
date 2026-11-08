@@ -6,6 +6,7 @@ use App\Http\Controllers\GudangController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +38,10 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::get('/export-csv', [OwnerController::class, 'exportCsv'])->name('export_csv');
     Route::get('/print-report', [OwnerController::class, 'printReport'])->name('print_report');
     
+    // Purchases (Monitoring Barang Masuk by Owner)
+    Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
+    Route::get('/purchases/{id}', [PurchaseController::class, 'show'])->name('purchases.show');
+    
     // Employee Account Management (CRUD)
     Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
 });
@@ -51,10 +56,16 @@ Route::middleware(['auth', 'role:gudang'])->prefix('gudang')->name('gudang.')->g
     // Master Products CRUD
     Route::resource('products', ProductController::class)->except(['create', 'show', 'edit']);
     
-    // Stock In / Supplier Restock Log
+    // Multi-Item Purchases / Transaksi Barang Masuk
+    Route::resource('purchases', PurchaseController::class)->only(['index', 'create', 'store', 'show']);
+    
+    // Legacy single-item Restock Log
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::post('/stock', [StockController::class, 'store'])->name('stock.store');
 });
+
+// Goods Receipt Note Print View (Accessible by Gudang & Owner)
+Route::middleware(['auth'])->get('/purchases/{id}/print', [PurchaseController::class, 'printNote'])->name('gudang.purchases.print');
 
 // Kasir (Front-Office) Routes (Strictly role:kasir)
 Route::middleware(['auth', 'role:kasir'])->prefix('kasir')->name('kasir.')->group(function () {

@@ -1,136 +1,115 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Gudang & Inventaris')
-@section('page_title', 'Dashboard Gudang & Manajemen Inventaris')
+@section('title', 'Dashboard Gudang')
 
 @section('content')
 <div class="container-fluid px-0">
-    <!-- Top Stat KPI Cards -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: #fff; font-size: 1.6rem;">Dashboard Gudang</h2>
+            <div style="color: #8892b0; font-size: 0.85rem;">Status stok menu dan logistik penerimaan</div>
+        </div>
+        <a href="{{ route('gudang.stock.index') }}" class="btn btn-primary-custom d-flex align-items-center gap-2">
+            <i class="bi bi-truck"></i>
+            <span>Stok Masuk Baru</span>
+        </a>
+    </div>
+
+    <!-- KPI Cards -->
     <div class="row g-3 mb-4">
-        <!-- Total Barang -->
         <div class="col-xl-3 col-sm-6">
-            <div class="card card-custom stat-card border-0 bg-white shadow-sm">
-                <div class="text-muted fw-semibold small">Total Jenis Produk (SKU)</div>
-                <h3 class="fw-bold text-dark mt-2 mb-1">{{ number_format($totalProducts) }}</h3>
-                <div class="text-primary small fw-medium">
-                    <i class="bi bi-boxes"></i> Terdaftar di katalog
+            <div class="stat-card">
+                <div style="color: #8892b0; font-size: 0.82rem; font-weight: 600;">Total Menu Terdaftar</div>
+                <h3 class="fw-bold mt-2 mb-1" style="color: #fff;">{{ number_format($totalProducts) }}</h3>
+                <div class="small fw-semibold" style="color: #60a5fa;">
+                    <i class="bi bi-boxes"></i> Master produk
                 </div>
-                <div class="stat-icon bg-primary-subtle text-primary">
+                <div class="stat-icon" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
                     <i class="bi bi-box-seam"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Total Stok Fisik -->
         <div class="col-xl-3 col-sm-6">
-            <div class="card card-custom stat-card border-0 bg-white shadow-sm">
-                <div class="text-muted fw-semibold small">Total Kuantitas Fisik</div>
-                <h3 class="fw-bold text-dark mt-2 mb-1">{{ number_format($totalStock) }} <span style="font-size: 1rem; font-weight: normal;">Unit</span></h3>
-                <div class="text-success small fw-medium">
-                    <i class="bi bi-check2-all"></i> Total seluruh stok gudang
+            <div class="stat-card">
+                <div style="color: #8892b0; font-size: 0.82rem; font-weight: 600;">Total Kuantitas Fisik</div>
+                <h3 class="fw-bold mt-2 mb-1" style="color: #fff;">{{ number_format($totalStock) }} <span style="font-size: 0.9rem; font-weight: normal; color: #8892b0;">Unit</span></h3>
+                <div class="small fw-semibold" style="color: #34d399;">
+                    <i class="bi bi-check2-all"></i> Total stok tersedia
                 </div>
-                <div class="stat-icon bg-success-subtle text-success">
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
                     <i class="bi bi-layers"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Peringatan Stok Menipis -->
         <div class="col-xl-3 col-sm-6">
-            <div class="card card-custom stat-card border-0 bg-white shadow-sm">
-                <div class="text-muted fw-semibold small">Peringatan Stok Menipis</div>
-                <h3 class="fw-bold {{ $lowStockCount > 0 ? 'text-danger' : 'text-success' }} mt-2 mb-1">
-                    {{ $lowStockCount }} <span style="font-size: 1rem; font-weight: normal;">Produk</span>
+            <div class="stat-card">
+                <div style="color: #8892b0; font-size: 0.82rem; font-weight: 600;">Stok Menipis</div>
+                <h3 class="fw-bold mt-2 mb-1" style="color: {{ $lowStockCount > 0 ? '#f87171' : '#34d399' }};">
+                    {{ $lowStockCount }} <span style="font-size: 0.9rem; font-weight: normal; color: #8892b0;">Produk</span>
                 </h3>
-                <div class="text-danger small fw-medium">
-                    <i class="bi bi-exclamation-triangle"></i> Membutuhkan restock
+                <div class="small fw-semibold" style="color: #8892b0;">
+                    Perlu restock segera
                 </div>
-                <div class="stat-icon {{ $lowStockCount > 0 ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' }}">
+                <div class="stat-icon" style="background: {{ $lowStockCount > 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)' }}; color: {{ $lowStockCount > 0 ? '#f87171' : '#34d399' }};">
                     <i class="bi bi-bell-fill"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Total Kategori -->
         <div class="col-xl-3 col-sm-6">
-            <div class="card card-custom stat-card border-0 bg-white shadow-sm">
-                <div class="text-muted fw-semibold small">Kategori Barang</div>
-                <h3 class="fw-bold text-dark mt-2 mb-1">{{ number_format($totalCategories) }}</h3>
-                <div class="text-muted small fw-medium">
-                    <i class="bi bi-tag"></i> Klasifikasi produk
+            <div class="stat-card">
+                <div style="color: #8892b0; font-size: 0.82rem; font-weight: 600;">Kategori Menu</div>
+                <h3 class="fw-bold mt-2 mb-1" style="color: #fff;">{{ number_format($totalCategories) }}</h3>
+                <div class="small fw-semibold" style="color: #fbbf24;">
+                    <i class="bi bi-tag"></i> Klasifikasi
                 </div>
-                <div class="stat-icon bg-warning-subtle text-warning">
+                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
                     <i class="bi bi-tags"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Low Stock Alert Banner & Action -->
-    @if($lowStockCount > 0)
-        <div class="card card-custom border-danger border-opacity-25 bg-danger-subtle p-3 mb-4 shadow-sm">
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-danger text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold text-danger mb-0">Peringatan: Terdapat {{ $lowStockCount }} produk dengan stok kritis!</h6>
-                        <small class="text-danger-emphasis">Segera input stok masuk dari supplier sebelum stok di meja kasir habis.</small>
-                    </div>
-                </div>
-                <a href="{{ route('gudang.stock.index') }}" class="btn btn-danger btn-sm fw-semibold">
-                    <i class="bi bi-truck me-1"></i> Buka Form Stok Masuk
-                </a>
-            </div>
-        </div>
-    @endif
-
+    <!-- Tables -->
     <div class="row g-3">
-        <!-- Low Stock Items Table -->
         <div class="col-lg-6">
-            <div class="card card-custom p-3 shadow-sm border-0 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-3 px-2 pt-2">
-                    <div>
-                        <h6 class="fw-bold text-dark mb-0">Daftar Produk Stok Kritis</h6>
-                        <small class="text-muted">Stok saat ini &le; batas minimum stok</small>
-                    </div>
-                    <span class="badge bg-danger-subtle text-danger">{{ $lowStockCount }} Item</span>
+            <div class="card-custom p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-white">Stok Kritis</h5>
+                    <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171;">{{ $lowStockCount }} Item</span>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
-                        <thead class="table-light">
+                    <table class="table table-dark-custom mb-0">
+                        <thead>
                             <tr>
-                                <th>Produk</th>
+                                <th>Menu</th>
                                 <th>Kategori</th>
-                                <th class="text-center">Sisa Stok</th>
-                                <th class="text-center">Min. Stok</th>
+                                <th class="text-center">Sisa</th>
+                                <th class="text-center">Batas Min</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($lowStockProducts as $lp)
                                 <tr>
                                     <td>
-                                        <div class="fw-bold text-dark">{{ $lp->name }}</div>
-                                        <small class="text-muted font-monospace">{{ $lp->code }}</small>
+                                        <div class="fw-semibold text-white">{{ $lp->name }}</div>
+                                        <small style="color: #8892b0;">{{ $lp->code }}</small>
                                     </td>
-                                    <td>
-                                        <span class="badge bg-light text-dark border">{{ $lp->category->name ?? '-' }}</span>
-                                    </td>
+                                    <td><span class="badge" style="background: #2d303e; color: #fff;">{{ $lp->category->name ?? '-' }}</span></td>
                                     <td class="text-center">
-                                        <span class="badge bg-danger text-white px-2 py-1">
+                                        <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">
                                             {{ $lp->stock }} {{ $lp->unit }}
                                         </span>
                                     </td>
-                                    <td class="text-center text-muted">
-                                        {{ $lp->min_stock }} {{ $lp->unit }}
-                                    </td>
+                                    <td class="text-center" style="color: #8892b0;">{{ $lp->min_stock }} {{ $lp->unit }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center text-success py-4">
+                                    <td colspan="4" class="text-center py-4" style="color: #34d399;">
                                         <i class="bi bi-check-circle fs-3 d-block mb-1"></i>
-                                        Semua stok barang dalam kondisi aman!
+                                        Semua stok aman!
                                     </td>
                                 </tr>
                             @endforelse
@@ -140,49 +119,39 @@
             </div>
         </div>
 
-        <!-- Recent Restocks Table -->
         <div class="col-lg-6">
-            <div class="card card-custom p-3 shadow-sm border-0 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-3 px-2 pt-2">
-                    <div>
-                        <h6 class="fw-bold text-dark mb-0">Riwayat Stok Masuk Terkini</h6>
-                        <small class="text-muted">Penerimaan barang dari supplier</small>
-                    </div>
-                    <a href="{{ route('gudang.stock.index') }}" class="btn btn-sm btn-outline-primary">
+            <div class="card-custom p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-white">Stok Masuk Terkini</h5>
+                    <a href="{{ route('gudang.stock.index') }}" class="btn btn-sm" style="background: #2d303e; color: #ea7c69; border-radius: 10px;">
                         Lihat Semua <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
-                        <thead class="table-light">
+                    <table class="table table-dark-custom mb-0">
+                        <thead>
                             <tr>
                                 <th>Waktu</th>
-                                <th>Barang</th>
+                                <th>Menu</th>
                                 <th>Supplier</th>
-                                <th class="text-center">Masuk</th>
+                                <th class="text-center">Jumlah</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($recentRestocks as $rr)
                                 <tr>
-                                    <td class="text-muted small">
-                                        {{ $rr->created_at->format('d/m H:i') }}
-                                    </td>
-                                    <td>
-                                        <div class="fw-semibold text-dark">{{ $rr->product->name ?? 'Produk Dihapus' }}</div>
-                                    </td>
-                                    <td class="text-muted small">
-                                        {{ $rr->supplier_name ?? '-' }}
-                                    </td>
+                                    <td style="color: #8892b0; font-size: 0.8rem;">{{ $rr->created_at->format('d/m H:i') }}</td>
+                                    <td class="text-white">{{ $rr->product->name ?? '-' }}</td>
+                                    <td style="color: #8892b0;">{{ $rr->supplier_name ?? '-' }}</td>
                                     <td class="text-center">
-                                        <span class="badge bg-success-subtle text-success fw-bold">
+                                        <span class="badge fw-bold" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
                                             +{{ $rr->qty }} {{ $rr->product->unit ?? 'pcs' }}
                                         </span>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center text-muted py-4">Belum ada riwayat stok masuk.</td>
+                                    <td colspan="4" class="text-center py-4" style="color: #8892b0;">Belum ada riwayat stok masuk.</td>
                                 </tr>
                             @endforelse
                         </tbody>

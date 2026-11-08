@@ -72,7 +72,7 @@ Aplikasi ini dibangun sesuai dengan spesifikasi dokumen laporan kelompok dan mem
 
 ## 🔑 Akun Demo (Untuk Dosen & Penilai)
 
-Pada halaman login (`http://127.0.0.1:8000/login`), tersedia tombol **"Klik Cepat Demo Akun"** sehingga dosen/penilai tidak perlu mengetik manual:
+Pada halaman login (`http://127.0.0.1:8000/login`), masukkan email dan password secara manual menggunakan daftar akun di bawah ini:
 
 | Role | Email | Password | Hak Akses |
 |---|---|---|---|

@@ -1,132 +1,90 @@
 @extends('layouts.app')
 
-@section('title', 'Master Data Barang')
-@section('page_title', 'Master Data Barang & Inventaris')
+@section('title', 'Katalog Menu & Barang')
 
 @section('content')
 <div class="container-fluid px-0">
-    <!-- Header & Action -->
-    <div class="card card-custom p-4 mb-4 border-0 shadow-sm bg-white">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div>
-                <h5 class="fw-bold text-dark mb-1">Katalog & Stok Barang</h5>
-                <p class="text-muted mb-0 small">Kelola data master barang, barcode/SKU, penetapan harga jual, dan stok gudang.</p>
-            </div>
-            <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addProductModal">
-                <i class="bi bi-plus-circle me-1"></i> Tambah Barang Baru
-            </button>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: #fff; font-size: 1.6rem;">Katalog Menu & Master Barang</h2>
+            <div style="color: #8892b0; font-size: 0.85rem;">Kelola menu restoran, harga jual kasir, dan persediaan</div>
         </div>
+        <button type="button" class="btn btn-primary-custom d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addProductModal">
+            <i class="bi bi-plus-circle"></i>
+            <span>Tambah Menu Baru</span>
+        </button>
     </div>
 
     <!-- Search & Filter Card -->
-    <div class="card card-custom p-3 mb-4 border-0 shadow-sm">
+    <div class="card-custom p-3 mb-4">
         <form method="GET" action="{{ route('gudang.products.index') }}" class="row g-2 align-items-center">
             <div class="col-md-5">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0" placeholder="Cari nama barang atau kode barcode..." value="{{ request('search') }}">
-                </div>
+                <input type="text" name="search" class="form-control" placeholder="Cari menu atau kode SKU..." value="{{ request('search') }}">
             </div>
             <div class="col-md-3">
                 <select name="category_id" class="form-select">
                     <option value="">Semua Kategori</option>
                     @foreach($categories as $c)
-                        <option value="{{ $c->id }}" {{ request('category_id') == $c->id ? 'selected' : '' }}>
-                            {{ $c->name }}
-                        </option>
+                        <option value="{{ $c->id }}" {{ request('category_id') == $c->id ? 'selected' : '' }}>{{ $c->name }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="col-md-2">
                 <select name="stock_status" class="form-select">
-                    <option value="">Semua Kondisi Stok</option>
-                    <option value="low" {{ request('stock_status') == 'low' ? 'selected' : '' }}>Stok Menipis (&le; Min)</option>
-                    <option value="out" {{ request('stock_status') == 'out' ? 'selected' : '' }}>Stok Habis (0)</option>
+                    <option value="">Semua Stok</option>
+                    <option value="low" {{ request('stock_status') == 'low' ? 'selected' : '' }}>Stok Menipis</option>
+                    <option value="out" {{ request('stock_status') == 'out' ? 'selected' : '' }}>Stok Habis</option>
                 </select>
             </div>
             <div class="col-md-2 d-flex gap-2">
-                <button type="submit" class="btn btn-primary-custom flex-grow-1">
-                    <i class="bi bi-funnel"></i> Filter
-                </button>
-                <a href="{{ route('gudang.products.index') }}" class="btn btn-light border" title="Reset">
+                <button type="submit" class="btn btn-primary-custom flex-grow-1">Filter</button>
+                <a href="{{ route('gudang.products.index') }}" class="btn" style="background: #2d303e; color: #fff; border-radius: 12px;">
                     <i class="bi bi-arrow-counterclockwise"></i>
                 </a>
             </div>
         </form>
     </div>
 
-    <!-- Products Table -->
-    <div class="card card-custom p-0 border-0 shadow-sm overflow-hidden">
+    <!-- Table -->
+    <div class="card-custom p-0 overflow-hidden">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
-                <thead class="table-light">
+            <table class="table table-dark-custom mb-0">
+                <thead>
                     <tr>
-                        <th class="ps-3">Kode/SKU</th>
-                        <th>Nama Barang</th>
+                        <th class="ps-4">Kode</th>
+                        <th>Nama Menu</th>
                         <th>Kategori</th>
                         <th class="text-end">Harga Beli</th>
                         <th class="text-end">Harga Jual</th>
                         <th class="text-center">Sisa Stok</th>
-                        <th class="text-center">Min. Stok</th>
-                        <th>Status</th>
-                        <th class="text-center">Aksi</th>
+                        <th class="text-center">Min</th>
+                        <th class="text-center pe-4">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($products as $p)
-                        @php
-                            $isLow = $p->stock <= $p->min_stock;
-                            $isOut = $p->stock <= 0;
-                            $profit = $p->selling_price - $p->cost_price;
-                        @endphp
                         <tr>
-                            <td class="ps-3">
-                                <span class="badge bg-light text-dark font-monospace border fw-semibold">{{ $p->code }}</span>
-                            </td>
-                            <td>
-                                <div class="fw-bold text-dark">{{ $p->name }}</div>
-                                <small class="text-muted">Margin Profit: <span class="text-success fw-semibold">+Rp {{ number_format($profit, 0, ',', '.') }}</span></small>
-                            </td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                                    {{ $p->category->name ?? '-' }}
-                                </span>
-                            </td>
-                            <td class="text-end text-muted">
-                                Rp {{ number_format($p->cost_price, 0, ',', '.') }}
-                            </td>
-                            <td class="text-end fw-bold text-dark">
-                                Rp {{ number_format($p->selling_price, 0, ',', '.') }}
-                            </td>
+                            <td class="ps-4"><span class="badge" style="background: #2d303e; color: #fff;">{{ $p->code }}</span></td>
+                            <td><div class="fw-bold text-white">{{ $p->name }}</div></td>
+                            <td><span class="badge" style="background: rgba(234, 124, 105, 0.15); color: #ea7c69;">{{ $p->category->name ?? '-' }}</span></td>
+                            <td class="text-end" style="color: #8892b0;">Rp {{ number_format($p->cost_price, 0, ',', '.') }}</td>
+                            <td class="text-end fw-bold text-white">Rp {{ number_format($p->selling_price, 0, ',', '.') }}</td>
                             <td class="text-center">
-                                @if($isOut)
-                                    <span class="badge bg-danger text-white px-2 py-1">Habis (0)</span>
-                                @elseif($isLow)
-                                    <span class="badge bg-danger text-white px-2 py-1" title="Peringatan: Stok menipis!">
-                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ $p->stock }} {{ $p->unit }}
-                                    </span>
+                                @if($p->stock <= 0)
+                                    <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">Habis</span>
+                                @elseif($p->stock <= $p->min_stock)
+                                    <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">{{ $p->stock }} {{ $p->unit }}</span>
                                 @else
-                                    <span class="badge bg-success-subtle text-success fw-bold px-2 py-1">
-                                        {{ $p->stock }} {{ $p->unit }}
-                                    </span>
+                                    <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">{{ $p->stock }} {{ $p->unit }}</span>
                                 @endif
                             </td>
-                            <td class="text-center text-muted">
-                                {{ $p->min_stock }} {{ $p->unit }}
-                            </td>
-                            <td>
-                                @if($p->is_active)
-                                    <span class="badge bg-success-subtle text-success">Aktif</span>
-                                @else
-                                    <span class="badge bg-secondary-subtle text-secondary">Nonaktif</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
+                            <td class="text-center" style="color: #8892b0;">{{ $p->min_stock }}</td>
+                            <td class="text-center pe-4">
                                 <div class="btn-group btn-group-sm">
-                                    <button type="button" class="btn btn-outline-primary" onclick="editProduct({{ json_encode($p) }})">
+                                    <button type="button" class="btn" style="background: #2d303e; color: #fff;" onclick="editProduct({{ json_encode($p) }})">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
-                                    <button type="button" class="btn btn-outline-danger" onclick="confirmDeleteProduct({{ $p->id }}, '{{ $p->name }}')">
+                                    <button type="button" class="btn" style="background: #2d303e; color: #f87171;" onclick="confirmDeleteProduct({{ $p->id }}, '{{ $p->name }}')">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                     <form id="delete-prod-{{ $p->id }}" action="{{ route('gudang.products.destroy', $p->id) }}" method="POST" style="display: none;">
@@ -138,106 +96,97 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center text-muted py-5">
-                                <i class="bi bi-box-seam fs-1 d-block mb-2 text-secondary opacity-50"></i>
-                                Tidak ada data barang yang sesuai kriteria.
-                            </td>
+                            <td colspan="8" class="text-center py-5" style="color: #8892b0;">Tidak ada menu yang sesuai kriteria.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="p-3 border-top d-flex justify-content-end">
+        <div class="p-3 border-top d-flex justify-content-end" style="border-color: rgba(255,255,255,0.08) !important;">
             {{ $products->links('pagination::bootstrap-5') }}
         </div>
     </div>
 </div>
 
-<!-- Modal Tambah Barang -->
+<!-- Modal Tambah Menu -->
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow">
+        <div class="modal-content dark-modal shadow">
             <form action="{{ route('gudang.products.store') }}" method="POST">
                 @csrf
-                <div class="modal-header bg-light">
-                    <h6 class="modal-title fw-bold">Tambah Data Barang Baru</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-white">Tambah Menu Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Kode Barcode / SKU</label>
-                            <input type="text" name="code" class="form-control" placeholder="Contoh: BRG001 atau scan barcode" required>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Kode / SKU</label>
+                            <input type="text" name="code" class="form-control" placeholder="BRG001" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Kategori</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Kategori</label>
                             <select name="category_id" class="form-select" required>
-                                <option value="">-- Pilih Kategori --</option>
+                                <option value="">Pilih Kategori</option>
                                 @foreach($categories as $c)
                                     <option value="{{ $c->id }}">{{ $c->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-semibold small">Nama Barang</label>
-                            <input type="text" name="name" class="form-control" placeholder="Contoh: Indomie Goreng Spesial 85g" required>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Nama Menu Makanan / Minuman</label>
+                            <input type="text" name="name" class="form-control" placeholder="Special Cheese Burger" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Harga Beli / Modal (Rp)</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Harga Modal (Rp)</label>
                             <input type="number" name="cost_price" class="form-control" placeholder="0" min="0" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Harga Jual Kasir (Rp)</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Harga Jual (Rp)</label>
                             <input type="number" name="selling_price" class="form-control" placeholder="0" min="0" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Stok Awal</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Stok Awal</label>
                             <input type="number" name="stock" class="form-control" placeholder="0" min="0" value="0" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Batas Peringatan (Min. Stok)</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Batas Min. Stok</label>
                             <input type="number" name="min_stock" class="form-control" placeholder="5" min="0" value="5" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Satuan / Unit</label>
-                            <input type="text" name="unit" class="form-control" placeholder="pcs / bks / btl" value="pcs" required>
-                        </div>
-                        <div class="col-12 mt-2">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="is_active" id="prodIsActive" checked value="1">
-                                <label class="form-check-label fw-semibold small" for="prodIsActive">Barang Aktif (Tampil di kasir)</label>
-                            </div>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Satuan</label>
+                            <input type="text" name="unit" class="form-control" value="pcs" required>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary-custom">Simpan Data Barang</button>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-primary-custom">Simpan Menu</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Modal Edit Barang -->
+<!-- Modal Edit Menu -->
 <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow">
+        <div class="modal-content dark-modal shadow">
             <form id="editProductForm" method="POST">
                 @csrf
                 @method('PUT')
-                <div class="modal-header bg-light">
-                    <h6 class="modal-title fw-bold">Edit Data Barang</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-white">Edit Data Menu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Kode Barcode / SKU</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Kode / SKU</label>
                             <input type="text" name="code" id="editCode" class="form-control" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Kategori</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Kategori</label>
                             <select name="category_id" id="editCategoryId" class="form-select" required>
                                 @foreach($categories as $c)
                                     <option value="{{ $c->id }}">{{ $c->name }}</option>
@@ -245,40 +194,34 @@
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-semibold small">Nama Barang</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Nama Menu</label>
                             <input type="text" name="name" id="editName" class="form-control" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Harga Beli / Modal (Rp)</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Harga Modal (Rp)</label>
                             <input type="number" name="cost_price" id="editCostPrice" class="form-control" min="0" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Harga Jual Kasir (Rp)</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Harga Jual (Rp)</label>
                             <input type="number" name="selling_price" id="editSellingPrice" class="form-control" min="0" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Stok Saat Ini</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Stok Saat Ini</label>
                             <input type="number" name="stock" id="editStock" class="form-control" min="0" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Batas Peringatan (Min. Stok)</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Min. Stok</label>
                             <input type="number" name="min_stock" id="editMinStock" class="form-control" min="0" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Satuan / Unit</label>
+                            <label class="form-label small fw-semibold" style="color: #8892b0;">Satuan</label>
                             <input type="text" name="unit" id="editUnit" class="form-control" required>
-                        </div>
-                        <div class="col-12 mt-2">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="is_active" id="editIsActive" value="1">
-                                <label class="form-check-label fw-semibold small" for="editIsActive">Barang Aktif (Tampil di kasir)</label>
-                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary-custom">Perbarui Data Barang</button>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-primary-custom">Perbarui Menu</button>
                 </div>
             </form>
         </div>
@@ -298,7 +241,6 @@
         $('#editStock').val(prod.stock);
         $('#editMinStock').val(prod.min_stock);
         $('#editUnit').val(prod.unit);
-        $('#editIsActive').prop('checked', prod.is_active == 1);
 
         const modal = new bootstrap.Modal(document.getElementById('editProductModal'));
         modal.show();
@@ -306,14 +248,14 @@
 
     function confirmDeleteProduct(id, name) {
         Swal.fire({
-            title: 'Hapus Barang?',
-            text: `Apakah Anda yakin ingin menghapus "${name}"?`,
+            title: 'Hapus Menu?',
+            text: `Hapus "${name}"?`,
             icon: 'warning',
+            background: '#252836',
+            color: '#fff',
             showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal'
+            confirmButtonColor: '#ea7c69',
+            confirmButtonText: 'Ya, Hapus'
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById(`delete-prod-${id}`).submit();
