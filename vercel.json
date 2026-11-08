@@ -1,21 +1,11 @@
 {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "public"
-      }
-    },
-    {
-      "src": "api/index.php",
-      "use": "vercel-php@0.7.2"
-    },
-    {
-      "src": "composer.json",
-      "use": "vercel-php@0.7.2"
+  "version": 2,
+  "functions": {
+    "api/index.php": {
+      "runtime": "vercel-php@0.7.2",
+      "maxDuration": 10
     }
-  ],
+  },
   "routes": [
     {
       "src": "/build/(.*)",
@@ -28,7 +18,7 @@
   ],
   "env": {
     "APP_ENV": "production",
-    "APP_DEBUG": "false",
+    "APP_DEBUG": "true",
     "LOG_CHANNEL": "stderr",
     "SESSION_DRIVER": "cookie",
     "CACHE_DRIVER": "array",
