@@ -17,7 +17,7 @@
   "env": {
     "APP_KEY": "base64:pKdzMxL2BapZbTpMhTM2hvdA7DR4WzF6HGjM3RpDhJg=",
     "APP_ENV": "production",
-    "APP_DEBUG": "false",
+    "APP_DEBUG": "true",
     "APP_URL": "https://kasirkuprojecttubes.vercel.app",
     "LOG_CHANNEL": "stderr",
     "SESSION_DRIVER": "cookie",
