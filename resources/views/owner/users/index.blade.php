@@ -59,11 +59,26 @@
                             </td>
                             <td class="text-center pe-4">
                                 <div class="btn-group btn-group-sm">
-                                    <button type="button" class="btn" style="background: #2d303e; color: #fff;" onclick="editUser({{ json_encode($u) }})">
+                                    <button type="button" class="btn" style="background: #2d303e; color: #fff;" title="Edit" onclick="editUser({{ json_encode($u) }})">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
                                     @if($u->id !== Auth::id())
-                                        <button type="button" class="btn" style="background: #2d303e; color: #f87171;" onclick="confirmDelete({{ $u->id }}, '{{ $u->name }}')">
+                                        @if($u->is_active)
+                                            <form id="toggle-form-{{ $u->id }}" action="{{ route('owner.users.toggle_status', $u->id) }}" method="POST" style="display: none;">
+                                                @csrf
+                                            </form>
+                                            <button type="button" class="btn" style="background: #2d303e; color: #fbbf24;" title="Nonaktifkan" onclick="confirmToggle({{ $u->id }}, '{{ $u->name }}', false)">
+                                                <i class="bi bi-toggle-on"></i>
+                                            </button>
+                                        @else
+                                            <form id="toggle-form-{{ $u->id }}" action="{{ route('owner.users.toggle_status', $u->id) }}" method="POST" style="display: none;">
+                                                @csrf
+                                            </form>
+                                            <button type="button" class="btn" style="background: #2d303e; color: #34d399;" title="Aktifkan" onclick="confirmToggle({{ $u->id }}, '{{ $u->name }}', true)">
+                                                <i class="bi bi-toggle-off"></i>
+                                            </button>
+                                        @endif
+                                        <button type="button" class="btn" style="background: #2d303e; color: #f87171;" title="Hapus" onclick="confirmDelete({{ $u->id }}, '{{ $u->name }}')">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                         <form id="delete-form-{{ $u->id }}" action="{{ route('owner.users.destroy', $u->id) }}" method="POST" style="display: none;">
@@ -119,6 +134,12 @@
                         <label class="form-label small fw-semibold" style="color: #8892b0;">No. WhatsApp</label>
                         <input type="text" name="phone" class="form-control" placeholder="08xxxxxxxxxx">
                     </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="is_active" id="addIsActive" checked>
+                        <label class="form-check-label small" style="color: #8892b0;" for="addIsActive">
+                            Aktifkan akun ini langsung setelah dibuat
+                        </label>
+                    </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
@@ -165,6 +186,12 @@
                         <label class="form-label small fw-semibold" style="color: #8892b0;">No. WhatsApp</label>
                         <input type="text" name="phone" id="editPhone" class="form-control">
                     </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="is_active" id="editIsActive">
+                        <label class="form-check-label small" style="color: #8892b0;" for="editIsActive">
+                            Akun Aktif (bisa login)
+                        </label>
+                    </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
@@ -185,9 +212,29 @@
         $('#editPassword').val('');
         $('#editRole').val(user.role);
         $('#editPhone').val(user.phone || '');
+        $('#editIsActive').prop('checked', user.is_active == 1 || user.is_active === true || user.is_active === '1');
 
         const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
         modal.show();
+    }
+
+    function confirmToggle(id, name, activate) {
+        const action = activate === false ? 'menonaktifkan' : 'mengaktifkan';
+        const statusText = activate === false ? 'Nonaktifkan' : 'Aktifkan';
+        Swal.fire({
+            title: `${statusText} Pegawai?`,
+            text: `Yakin ingin ${action} akun "${name}"?`,
+            icon: 'question',
+            background: '#252836',
+            color: '#fff',
+            showCancelButton: true,
+            confirmButtonColor: '#ea7c69',
+            confirmButtonText: `Ya, ${statusText}`
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`toggle-form-${id}`).submit();
+            }
+        });
     }
 
     function confirmDelete(id, name) {

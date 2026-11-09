@@ -44,6 +44,7 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     
     // Employee Account Management (CRUD)
     Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
+    Route::post('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle_status');
 });
 
 // Admin Gudang Routes (Strictly role:gudang)

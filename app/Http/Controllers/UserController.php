@@ -27,7 +27,7 @@ class UserController extends Controller
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
-        $validated['is_active'] = $request->has('is_active');
+        $validated['is_active'] = true; // Pegawai baru otomatis aktif agar langsung bisa login
 
         User::create($validated);
 
@@ -74,5 +74,18 @@ class UserController extends Controller
 
         return redirect()->route('owner.users.index')
             ->with('success', 'Akun pegawai berhasil dihapus.');
+    }
+
+    public function toggleStatus(User $user)
+    {
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Anda tidak dapat mengubah status akun Anda sendiri.');
+        }
+
+        $user->is_active = !$user->is_active;
+        $user->save();
+
+        $status = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        return back()->with('success', "Akun {$user->name} berhasil {$status}.");
     }
 }
